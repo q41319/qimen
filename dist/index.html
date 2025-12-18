@@ -1,390 +1,175 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>奇门遁甲排盘系统</title>
-
-    <!-- Bootstrap 3.4.1 CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
-    <!-- 自定义样式：直接内嵌，避免额外文件 -->
-    <style>
-        body{padding-top:50px;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:#fdfaf4}
-        .navbar-inverse{background:#3e2723;border-color:#3e2723}
-        .page-title{margin:20px 0;font-weight:700;color:#3e2723}
-        .basic-info{display:inline-block;text-align:left;margin-bottom:25px}
-        .info-item{margin:4px 0}
-        .qimen-pan{overflow-x:auto}
-        .pan-outer{display:inline-block;position:relative}
-        .pan-grid{display:grid;grid-template-columns:repeat(3,160px);grid-gap:8px}
-        .gong{width:160px;height:160px;border:2px solid #8b4513;border-radius:6px;position:relative;background:#fff9e6;font-size:13px}
-        .gong-content{position:absolute;inset:4px;display:grid;grid-template-areas:
-            "dizhi  ts   tg"
-            "bs     door jx"
-            "gn     num  dp";grid-template-columns:1fr 1fr 1fr;grid-template-rows:20px 1fr 20px;gap:2px;text-align:center;align-items:center}
-        .gong-dizhi{grid-area:dizhi;font-size:12px;color:#666}
-        .gong-bashen{grid-area:bs;font-size:12px;font-weight:700;color:#c62828}
-        .gong-tianganfang{grid-area:tg;font-size:11px}
-        .gong-bamen{grid-area:door;font-size:14px;font-weight:700;color:#1565c0}
-        .gong-jiuxing{grid-area:jx;font-size:14px;font-weight:700;color:#6a1b9a}
-        .gong-tiangan{grid-area:tg;font-size:12px;font-weight:700}
-        .gong-gongname{grid-area:gn;font-size:12px;font-weight:700;color:#795548}
-        .gong-number{grid-area:num;font-size:16px;font-weight:700;color:#444}
-        .gong-dipan{grid-area:dp;font-size:12px;font-weight:700}
-        .xiao_ji{background:#e8f5e9}
-        .xiao_xiong{background:#ffebee}
-        .ping{background:#fafafa}
-        .zhifu{border:3px solid #ff9800}
-        .zhishi{border:3px solid #2196f3}
-        .circle-mark{display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;font-size:11px;text-align:center;color:#fff}
-        .yellow-circle{background:#f57c00}
-        .green-circle{background:#388e3c}
-        .footer{margin-top:40px;padding:20px 0;text-align:center;font-size:12px;color:#666;border-top:1px solid #e0e0e0}
-        .suggestion-list{padding-left:18px}
-        .gong-details{margin-top:15px}
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>奇门遁甲排盘系统</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+<style>
+body{padding-top:50px;background:#fdfaf4;font-family:Helvetica,Arial}
+.navbar-inverse{background:#3e2723!important;border-color:#3e2723}
+.page-title{margin:20px 0;font-weight:700;color:#3e2723}
+.basic-info{display:inline-block;text-align:left;margin-bottom:20px}
+.info-item{margin:4px 0}
+.qimen-pan{overflow-x:auto;text-align:center}
+.pan-outer{display:inline-block;border:3px solid #795548;border-radius:6px;background:#fff}
+.pan-grid{display:grid;grid-template-columns:repeat(3,180px);grid-template-rows:repeat(3,180px);gap:1px;background:#795548}
+.gong{background:#fff9e6;font-size:13px;display:flex;flex-direction:column}
+.gong-header{display:flex;justify-content:space-between;padding:2px 4px;font-size:12px;color:#666;border-bottom:1px solid #d7ccc8}
+.gong-dizhi,.gong-tgf{flex:1}
+.gong-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.gong-bamen{font-size:18px;font-weight:700;color:#1565c0;margin:2px 0}
+.gong-jiuxing{font-size:18px;font-weight:700;color:#6a1b9a;margin:2px 0}
+.gong-bashen{font-size:13px;font-weight:700;color:#c62828;margin:2px 0}
+.gong-footer{display:flex;justify-content:space-between;align-items:center;padding:2px 4px;font-size:12px;border-top:1px solid #d7ccc8}
+.gong-gongname{font-weight:700;color:#795548}
+.gong-number{font-weight:700;font-size:16px;color:#444}
+.gong-dipan{font-weight:700}
+.xiao_ji{background:#e8f5e9}
+.xiao_xiong{background:#ffebee}
+.ping{background:#fafafa}
+.zhifu{border:3px solid #ff9800}
+.zhishi{border:3px solid #2196f3}
+.circle-mark{display:inline-block;width:20px;height:20px;line-height:20px;border-radius:50%;font-size:11px;text-align:center;color:#fff}
+.yellow-circle{background:#f57c00}
+.green-circle{background:#388e3c}
+.footer{margin-top:30px;padding:20px 0;text-align:center;font-size:12px;color:#666;border-top:1px solid #e0e0e0}
+.panel-body ul{padding-left:18px}
+</style>
 </head>
 <body>
-    <!-- 导航 -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                    <span class="sr-only">切换导航</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">奇门遁甲排盘系统</a>
-            </div>
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="/">实时排盘</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#customPanModal">自定义排盘</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#helpModal">使用说明</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- 主内容 -->
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h2 class="page-title">奇门遁甲排盘</h2>
-                <div class="basic-info">
-                    <div class="info-item"><strong>排盘类型:</strong> <span id="panType">四柱</span></div>
-                    <div class="info-item"><strong>排盘方法:</strong> <span id="panMethod">时家</span></div>
-                    <div class="info-item"><strong>公历:</strong> <span id="solarDate">2025-12-18 15:13:17 星期四 射手座</span></div>
-                    <div class="info-item"><strong>农历:</strong> <span id="lunarDate">二〇二五年十月廿九</span></div>
-                    <div class="info-item"><strong>四柱:</strong>
-                        <span class="label label-primary">乙巳</span>
-                        <span class="label label-primary">戊子</span>
-                        <span class="label label-primary">辛酉</span>
-                        <span class="label label-primary">丙申</span>
-                    </div>
-                    <div class="info-item"><strong>旬首:</strong> <span id="xunShou">辛</span></div>
-                    <div class="info-item"><strong>局数:</strong> <span id="juShu">阴遁4局 (上元)</span></div>
-                    <div class="info-item"><strong>值符:</strong> <span id="zhiFu">天蓬(6宫)</span></div>
-                    <div class="info-item"><strong>值使:</strong> <span id="zhiShi">休门(3宫)</span></div>
-                    <div class="info-item"><strong>运势:</strong> <span id="overallLuck" class="text-danger">小凶</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 奇门九宫图 -->
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <div class="qimen-pan">
-                    <div class="pan-outer">
-                        <div class="pan-grid">
-                            <!-- 第一行 4 9 2 -->
-                            <div class="gong gong4 xiao_ji"><div class="gong-content">
-                                <div class="gong-dizhi">壬</div><div class="gong-bashen">白虎</div><div class="gong-tianganfang"><span class="circle-mark yellow-circle">空</span></div>
-                                <div class="gong-bamen">生门</div><div class="gong-jiuxing">天英</div><div class="gong-tiangan">壬</div>
-                                <div class="gong-gongname">巽</div><div class="gong-number">四</div><div class="gong-dipan">戊</div>
-                            </div></div>
-                            <div class="gong gong9 xiao_xiong"><div class="gong-content">
-                                <div class="gong-dizhi">乙</div><div class="gong-bashen">六合</div>
-                                <div class="gong-bamen">伤门</div><div class="gong-jiuxing">禽芮</div><div class="gong-tiangan">庚</div>
-                                <div class="gong-gongname">离</div><div class="gong-number">九</div><div class="gong-dipan">壬</div>
-                            </div></div>
-                            <div class="gong gong2 xiao_ji"><div class="gong-content">
-                                <div class="gong-dizhi">丁</div><div class="gong-bashen">太阴</div>
-                                <div class="gong-bamen">杜门</div><div class="gong-jiuxing">天柱</div><div class="gong-tiangan">丁</div>
-                                <div class="gong-gongname">坤</div><div class="gong-number">二</div><div class="gong-dipan">庚</div>
-                            </div></div>
-
-                            <!-- 第二行 3 5 7 -->
-                            <div class="gong gong3 xiao_xiong zhishi"><div class="gong-content">
-                                <div class="gong-dizhi">癸</div><div class="gong-bashen">玄武</div>
-                                <div class="gong-bamen">休门</div><div class="gong-jiuxing">天辅</div><div class="gong-tiangan">戊</div>
-                                <div class="gong-gongname">震</div><div class="gong-number">三</div><div class="gong-dipan">己</div>
-                            </div></div>
-                            <div class="gong gong5 ping"><div class="gong-content">
-                                <div class="gong-dizhi">辛</div><div class="gong-jiuxing"></div><div class="gong-tiangan">丁</div>
-                                <div class="gong-gongname">中</div><div class="gong-number">五</div><div class="gong-dipan">乙</div>
-                            </div></div>
-                            <div class="gong gong7 xiao_ji"><div class="gong-content">
-                                <div class="gong-dizhi">己</div><div class="gong-bashen">腾蛇</div>
-                                <div class="gong-bamen">景门</div><div class="gong-jiuxing">天心</div><div class="gong-tiangan">丙</div>
-                                <div class="gong-gongname">兑</div><div class="gong-number">七</div><div class="gong-dipan">丁</div>
-                            </div></div>
-
-                            <!-- 第三行 8 1 6 -->
-                            <div class="gong gong8 xiao_ji"><div class="gong-content">
-                                <div class="gong-dizhi">戊</div><div class="gong-bashen">九地</div>
-                                <div class="gong-tianganfang"><span class="circle-mark green-circle">马</span></div>
-                                <div class="gong-bamen">开门</div><div class="gong-jiuxing">天冲</div><div class="gong-tiangan">己</div>
-                                <div class="gong-gongname">艮</div><div class="gong-number">八</div><div class="gong-dipan">癸</div>
-                            </div></div>
-                            <div class="gong gong1 ping"><div class="gong-content">
-                                <div class="gong-dizhi">丙</div><div class="gong-bashen">九天</div>
-                                <div class="gong-bamen">惊门</div><div class="gong-jiuxing">天任</div><div class="gong-tiangan">癸</div>
-                                <div class="gong-gongname">坎</div><div class="gong-number">一</div><div class="gong-dipan">辛</div>
-                            </div></div>
-                            <div class="gong gong6 xiao_xiong zhifu"><div class="gong-content">
-                                <div class="gong-dizhi">庚</div><div class="gong-bashen">值符</div>
-                                <div class="gong-bamen">死门</div><div class="gong-jiuxing">天蓬</div><div class="gong-tiangan">辛</div>
-                                <div class="gong-gongname">乾</div><div class="gong-number">六</div><div class="gong-dipan">丙</div>
-                            </div></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 分析与建议 -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-primary">
-                    <div class="panel-heading"> <h3 class="panel-title">分析与建议</h3> </div>
-                    <div class="panel-body">
-                        <p>值符:<strong>6宫(乾)</strong>, 值使:<strong>3宫(震)</strong></p>
-                        <p>最有利方位: <strong>西南(坤宫)</strong></p>
-                        <strong>建议:</strong>
-                        <ul class="suggestion-list">
-                            <li>时运不佳，宜守不宜进，避免冒险。</li>
-                            <li>谨防小人，保持低调。</li>
-                            <li>财务宜节约，避免大额支出。</li>
-                            <li>最有利方位在西南方(坤宫)，可多往此方位活动。</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 九宫详解 -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading"> <h3 class="panel-title">九宫详解</h3> </div>
-                    <div class="panel-body">
-                        <div class="row gong-details">
-                            <div class="col-md-4">
-                                <div class="panel panel-info">
-                                    <div class="panel-heading"> <h4 class="panel-title">1-坎 <span class="pull-right label label-default">平</span></h4> </div>
-                                    <div class="panel-body">
-                                        <p><strong>方位:</strong> 正北 <strong>九星:</strong> 天任(巨门)</p>
-                                        <p><strong>八门:</strong> 惊门 <strong>八神:</strong> 九天</p>
-                                        <p><strong>三奇六仪:</strong> 癸</p>
-                                        <p class="gong-explain">坎宫主水，与事业、财运、流动资金有关。天任(巨门)入1宫，主责任、重担、实际。惊门入1宫，为凶门，主惊吓、变故、突发状况。需注意意外变化。九天入1宫，为吉神，主高升、贵人、成功。此宫平常，事情进展一般，需谨慎行事。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel panel-success">
-                                    <div class="panel-heading"> <h4 class="panel-title">2-坤 <span class="pull-right label label-success">小吉</span></h4> </div>
-                                    <div class="panel-body">
-                                        <p><strong>方位:</strong> 西南 <strong>九星:</strong> 天柱(破军)</p>
-                                        <p><strong>八门:</strong> 杜门 <strong>八神:</strong> 太阴</p>
-                                        <p><strong>三奇六仪:</strong> 丁</p>
-                                        <p class="gong-explain">坤宫主土，与婚姻、母亲、女性长辈有关。天柱(破军)入2宫，主坚固、支撑、顶天立地。杜门入2宫，为凶门，主阻塞、停滞、困难。事情易受阻碍。太阴入2宫，为吉神，主柔和、隐藏、内敛。此宫小吉，事情有贵人相助，稳步推进为宜。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel panel-danger">
-                                    <div class="panel-heading"> <h4 class="panel-title">3-震 <span class="pull-right label label-danger">小凶</span></h4> </div>
-                                    <div class="panel-body">
-                                        <p><strong>方位:</strong> 正东 <strong>九星:</strong> 天辅(文曲)</p>
-                                        <p><strong>八门:</strong> 休门 <strong>八神:</strong> 玄武</p>
-                                        <p><strong>三奇六仪:</strong> 戊</p>
-                                        <p class="gong-explain">震宫主木，与创业、开始、长子有关。天辅(文曲)入3宫，主扶助、支持、辅佐。休门入3宫，为吉门，主休养、安宁、平和。适合休息与调养。玄武入3宫，为凶神，主隐秘、盗窃、欺诈。此宫小凶，事情多有阻碍，宜守不宜进。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel panel-success">
-                                    <div class="panel-heading"> <h4 class="panel-title">4-巽 <span class="pull-right label label-success">小吉</span></h4> </div>
-                                    <div class="panel-body">
-                                        <p><strong>方位:</strong> 东南 <strong>九星:</strong> 天英(左辅)</p>
-                                        <p><strong>八门:</strong> 生门 <strong>八神:</strong> 白虎</p>
-                                        <p><strong>三奇六仪:</strong> 壬</p>
-                                        <p class="gong-explain">巽宫主木，与女性、柔和、文书有关。天英(左辅)入4宫，主才华、聪明、显贵。生门入4宫，为吉门，主生发、成长、喜庆。适合开始新事物。白虎入4宫，为凶神，主凶猛、伤害、灾祸。此宫小吉，事情有贵人相助，稳步推进为宜。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel panel-danger">
-                                    <div class="panel-heading"> <h4 class="panel-title">5-中 <span class="pull-right label label-danger">小凶</span></h4> </div>
-                                    <div class="panel-body">
-                                        <p><strong>方位:</strong> 中宫 <strong>九星:</strong> </p>
-                                        <p><strong>三奇六仪:</strong> 丁</p>
-                                        <p class="gong-explain">中宫为核心，统领八方，与自身状态有关。此宫小凶，事情多有阻碍，宜守不宜进。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel panel-danger">
-                                    <div class="panel-heading"> <h4 class="panel-title">6-乾 <span class="pull-right label label-danger">小凶</span></h4> </div>
-                                    <div class="panel-body">
-                                        <p><strong>方位:</strong> 西北 <strong>九星:</strong> 天蓬(贪狼)</p>
-                                        <p><strong>八门:</strong> 死门 <strong>八神:</strong> 值符</p>
-                                        <p><strong>三奇六仪:</strong> 辛</p>
-                                        <p class="gong-explain">乾宫主金，与父亲、权威、领导有关。天蓬(贪狼)入6宫，主智慧、口才、机变。死门入6宫，为凶门，主衰败、结束、死亡。不宜开始重要事情。值符入6宫，为贵神，主吉庆、贵人、福星。此宫小凶，事情多有阻碍，宜守不宜进。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel panel-success">
-                                    <div class="panel-heading"> <h4 class="panel-title">7-兑 <span class="pull-right label label-success">小吉</span></h4> </div>
-                                    <div class="panel-body">
-                                        <p><strong>方位:</strong> 正西 <strong>九星:</strong> 天心(廉贞)</p>
-                                        <p><strong>八门:</strong> 景门 <strong>八神:</strong> 腾蛇</p>
-                                        <p><strong>三奇六仪:</strong> 丙</p>
-                                        <p class="gong-explain">兑宫主金，与口舌、沟通、少女有关。天心(廉贞)入7宫，主决断、判断、果决。景门入7宫，为吉门，主光明、展示、明亮。适合公开场合与展示。腾蛇入7宫，为凶神，主口舌是非、波动起伏。此宫小吉，事情有贵人相助，稳步推进为宜。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel panel-success">
-                                    <div class="panel-heading"> <h4 class="panel-title">8-艮 <span class="pull-right label label-success">小吉</span></h4> </div>
-                                    <div class="panel-body">
-                                        <p><strong>方位:</strong> 东北 <strong>九星:</strong> 天冲(禄存)</p>
-                                        <p><strong>八门:</strong> 开门 <strong>八神:</strong> 九地</p>
-                                        <p><strong>三奇六仪:</strong> 己</p>
-                                        <p class="gong-explain">艮宫主土，与停止、障碍、少男有关。天冲(禄存)入8宫，主冲击、变化、快速。开门入8宫，为吉门，主通达、顺畅、开始。万事顺利，有好的开端。九地入8宫，为吉神，主地利、丰收、稳固。此宫小吉，事情有贵人相助，稳步推进为宜。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel panel-danger">
-                                    <div class="panel-heading"> <h4 class="panel-title">9-离 <span class="pull-right label label-danger">小凶</span></h4> </div>
-                                    <div class="panel-body">
-                                        <p><strong>方位:</strong> 正南 <strong>九星:</strong> 禽芮</p>
-                                        <p><strong>八门:</strong> 伤门 <strong>八神:</strong> 六合</p>
-                                        <p><strong>三奇六仪:</strong> 庚</p>
-                                        <p class="gong-explain">离宫主火，与名声、眼睛、光明有关。禽芮入9宫。伤门入9宫，为凶门，主伤害、损失、疾病。需避免冲突与伤害。六合入9宫，为吉神，主和谐、团结、合作。此宫小凶，事情多有阻碍，宜守不宜进。</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">切换导航</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">奇门遁甲排盘系统</a>
     </div>
-
-    <!-- 模态框：自定义排盘 -->
-    <div class="modal fade" id="customPanModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">自定义排盘</h4>
-                </div>
-                <form id="customPanForm" action="/custom" method="get">
-                    <div class="modal-body">
-                        <div class="form-group"><label>排盘类型</label>
-                            <select class="form-control" name="type"><option value="四柱">四柱</option><option value="三元">三元</option></select>
-                        </div>
-                        <div class="form-group"><label>排盘方法</label>
-                            <select class="form-control" name="method">
-                                <option value="时家">时家奇门</option><option value="日家">日家奇门</option>
-                                <option value="月家">月家奇门</option><option value="年家">年家奇门</option>
-                            </select>
-                        </div>
-                        <div class="form-group"><label>日期</label><input type="date" class="form-control" name="date" required></div>
-                        <div class="form-group"><label>时间</label><input type="time" class="form-control" name="time" required></div>
-                        <div class="form-group"><label>地点</label><input type="text" class="form-control" name="location" placeholder="如：北京市"></div>
-                        <div class="form-group"><label>目的</label>
-                            <select class="form-control" name="purpose">
-                                <option value="综合">综合分析</option><option value="事业">事业</option>
-                                <option value="财运">财运</option><option value="婚姻">婚姻</option>
-                                <option value="健康">健康</option><option value="学业">学业</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                        <button type="submit" class="btn btn-primary">排盘</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">实时排盘</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#customPanModal">自定义排盘</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#helpModal">使用说明</a></li>
+      </ul>
     </div>
+  </div>
+</nav>
 
-    <!-- 模态框：使用说明 -->
-    <div class="modal fade" id="helpModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">奇门遁甲使用说明</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>奇门遁甲简介</h4>
-                            <p>奇门遁甲是中国古代预测学的一种，与六壬、太乙合称三式。它通过天地之气的运行规律，推算各种事物的吉凶。</p>
-                            <h4>基本要素</h4>
-                            <ul>
-                                <li><strong>三奇六仪:</strong> 三奇指戊己庚三个天干，六仪指辛壬癸丁丙乙</li>
-                                <li><strong>八门:</strong> 指休、生、伤、杜、景、死、惊、开八门</li>
-                                <li><strong>九星:</strong> 指天蓬、天芮、天冲、天辅、天禽、天英、天柱、天任、天心九颗星</li>
-                                <li><strong>八神:</strong> 指值符、腾蛇、太阴、六合、白虎、玄武、九地、九天八种神煞</li>
-                                <li><strong>值符值使:</strong> 值符为九星之首，值使为八门之首</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <h4>排盘方法说明</h4>
-                            <ul>
-                                <li><strong>四柱:</strong> 分别取年、月、日、时四柱</li>
-                                <li><strong>三元:</strong> 只取年、月、日三柱</li>
-                                <li><strong>时家奇门:</strong> 以时辰排盘，适合短期预测</li>
-                                <li><strong>日家奇门:</strong> 以日子排盘，适合中期预测</li>
-                                <li><strong>月家奇门:</strong> 以月份排盘，适合长期预测</li>
-                                <li><strong>年家奇门:</strong> 以年份排盘，适合长期预测</li>
-                            </ul>
-                            <h4>吉凶判断</h4>
-                            <p>在奇门遁甲中，吉凶判断主要基于以下因素:</p>
-                            <ul>
-                                <li>值符、值使落宫的吉凶</li>
-                                <li>宫位中九星、八门、八神的组合</li>
-                                <li>八门的性质: 休、生、开、景为吉门；伤、杜、死、惊为凶门</li>
-                                <li>九星的属性与作用</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                </div>
-            </div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <h2 class="page-title">奇门遁甲排盘</h2>
+      <div class="basic-info">
+        <div class="info-item"><strong>排盘类型:</strong> <span>四柱</span></div>
+        <div class="info-item"><strong>排盘方法:</strong> <span>时家</span></div>
+        <div class="info-item"><strong>公历:</strong> <span>2025-12-18 19:29:20 星期四 射手座</span></div>
+        <div class="info-item"><strong>农历:</strong> <span>二〇二五年十月廿九</span></div>
+        <div class="info-item"><strong>四柱:</strong>
+          <span class="label label-primary">乙巳</span>
+          <span class="label label-primary">戊子</span>
+          <span class="label label-primary">辛酉</span>
+          <span class="label label-primary">戊戌</span>
         </div>
+        <div class="info-item"><strong>旬首:</strong> <span>辛</span></div>
+        <div class="info-item"><strong>局数:</strong> <span>阴遁4局 (上元)</span></div>
+        <div class="info-item"><strong>值符:</strong> <span>天蓬(4宫)</span></div>
+        <div class="info-item"><strong>值使:</strong> <span>休门(3宫)</span></div>
+        <div class="info-item"><strong>运势:</strong> <span class="text-danger">小凶</span></div>
+      </div>
     </div>
+  </div>
 
-    <!-- 页脚 -->
-    <footer class="footer">
-        <div class="container">
-            <p class="text-muted">奇门遁甲排盘系统 &copy; 2025</p>
+  <!-- 九宫格 -->
+  <div class="row">
+    <div class="col-md-12 text-center">
+      <div class="qimen-pan">
+        <div class="pan-outer">
+          <div class="pan-grid">
+            <!-- 4 9 2 -->
+            <div class="gong gong4 xiao_ji zhifu"><div class="gong-header"><span class="gong-dizhi">壬</span><span class="gong-tgf"><span class="circle-mark yellow-circle">空</span></span></div><div class="gong-main"><div class="gong-bashen">值符</div><div class="gong-bamen">生门</div><div class="gong-jiuxing">天蓬</div></div><div class="gong-footer"><span class="gong-gongname">巽</span><span class="gong-number">四</span><span class="gong-dipan">戊</span></div></div>
+            <div class="gong gong9 ping"><div class="gong-header"><span class="gong-dizhi">乙</span><span class="gong-tgf"></span></div><div class="gong-main"><div class="gong-bashen">九天</div><div class="gong-bamen">伤门</div><div class="gong-jiuxing">天任</div></div><div class="gong-footer"><span class="gong-gongname">离</span><span class="gong-number">九</span><span class="gong-dipan">壬</span></div></div>
+            <div class="gong gong2 xiao_xiong"><div class="gong-header"><span class="gong-dizhi">丁</span><span class="gong-tgf"><span class="circle-mark green-circle">马</span></span></div><div class="gong-main"><div class="gong-bashen">九地</div><div class="gong-bamen">杜门</div><div class="gong-jiuxing">天冲</div></div><div class="gong-footer"><span class="gong-gongname">坤</span><span class="gong-number">二</span><span class="gong-dipan">庚</span></div></div>
+
+            <!-- 3 5 7 -->
+            <div class="gong gong3 xiao_ji zhishi"><div class="gong-header"><span class="gong-dizhi">癸</span><span class="gong-tgf"></span></div><div class="gong-main"><div class="gong-bashen">腾蛇</div><div class="gong-bamen">休门</div><div class="gong-jiuxing">天心</div></div><div class="gong-footer"><span class="gong-gongname">震</span><span class="gong-number">三</span><span class="gong-dipan">己</span></div></div>
+            <div class="gong gong5 ping"><div class="gong-header"><span class="gong-dizhi">辛</span><span class="gong-tgf"></span></div><div class="gong-main"><div class="gong-bashen"></div><div class="gong-bamen"></div><div class="gong-jiuxing"></div></div><div class="gong-footer"><span class="gong-gongname">中</span><span class="gong-number">五</span><span class="gong-dipan">乙</span></div></div>
+            <div class="gong gong7 xiao_xiong"><div class="gong-header"><span class="gong-dizhi">己</span><span class="gong-tgf"></span></div><div class="gong-main"><div class="gong-bashen">玄武</div><div class="gong-bamen">景门</div><div class="gong-jiuxing">天辅</div></div><div class="gong-footer"><span class="gong-gongname">兑</span><span class="gong-number">七</span><span class="gong-dipan">戊</span></div></div>
+
+            <!-- 8 1 6 -->
+            <div class="gong gong8 da_ji"><div class="gong-header"><span class="gong-dizhi">戊</span><span class="gong-tgf"></span></div><div class="gong-main"><div class="gong-bashen">太阴</div><div class="gong-bamen">开门</div><div class="gong-jiuxing">天柱</div></div><div class="gong-footer"><span class="gong-gongname">艮</span><span class="gong-number">八</span><span class="gong-dipan">癸</span></div></div>
+            <div class="gong gong1 xiao_xiong"><div class="gong-header"><span class="gong-dizhi">丙</span><span class="gong-tgf"></span></div><div class="gong-main"><div class="gong-bashen">六合</div><div class="gong-bamen">惊门</div><div class="gong-jiuxing">禽芮</div></div><div class="gong-footer"><span class="gong-gongname">坎</span><span class="gong-number">一</span><span class="gong-dipan">辛</span></div></div>
+            <div class="gong gong6 xiao_xiong"><div class="gong-header"><span class="gong-dizhi">庚</span><span class="gong-tgf"></span></div><div class="gong-main"><div class="gong-bashen">白虎</div><div class="gong-bamen">死门</div><div class="gong-jiuxing">天英</div></div><div class="gong-footer"><span class="gong-gongname">乾</span><span class="gong-number">六</span><span class="gong-dipan">壬</span></div></div>
+          </div>
         </div>
-    </footer>
+      </div>
+    </div>
+  </div>
 
-    <!-- JS 依赖 -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+  <!-- 分析与建议 -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading"><h3 class="panel-title">分析与建议</h3></div>
+        <div class="panel-body">
+          <p>值符:<strong>4宫(巽)</strong>, 值使:<strong>3宫(震)</strong></p>
+          <p>最有利方位: <strong>东北(艮宫)</strong></p>
+          <strong>建议:</strong>
+          <ul class="suggestion-list">
+            <li>时运不佳，宜守不宜进，避免冒险。</li>
+            <li>谨防小人，保持低调。</li>
+            <li>财务宜节约，避免大额支出。</li>
+            <li>最有利方位在东北方(艮宫)，可多往此方位活动。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 九宫详解 -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">九宫详解</h3></div>
+        <div class="panel-body">
+          <div class="row gong-details">
+            <div class="col-md-4"><div class="panel panel-danger"><div class="panel-heading"><h4 class="panel-title">1-坎 <span class="pull-right label label-danger">小凶</span></h4></div><div class="panel-body"><p><strong>方位:</strong> 正北 <strong>九星:</strong> 禽芮</p><p><strong>八门:</strong> 惊门 <strong>八神:</strong> 六合</p><p><strong>三奇六仪:</strong> 庚</p><p class="gong-explain">小凶，注意突发变化，防口舌。</p></div></div></div>
+            <div class="col-md-4"><div class="panel panel-danger"><div class="panel-heading"><h4 class="panel-title">2-坤 <span class="pull-right label label-danger">小凶</span></h4></div><div class="panel-body"><p><strong>方位:</strong> 西南 <strong>九星:</strong> 天冲</p><p><strong>八门:</strong> 杜门 <strong>八神:</strong> 九地</p><p><strong>三奇六仪:</strong> 己</p><p class="gong-explain">小凶，事多阻碍，宜静守。</p></div></div></div>
+            <div class="col-md-4"><div class="panel panel-success"><div class="panel-heading"><h4 class="panel-title">3-震 <span class="pull-right label label-success">小吉</span></h4></div><div class="panel-body"><p><strong>方位:</strong> 正东 <strong>九星:</strong> 天心</p><p><strong>八门:</strong> 休门 <strong>八神:</strong> 腾蛇</p><p><strong>三奇六仪:</strong> 丙</p><p class="gong-explain">小吉，可谋事，防口舌即可。</p></div></div></div>
+            <div class="col-md-4"><div class="panel panel-success"><div class="panel-heading"><h4 class="panel-title">4-巽 <span class="pull-right label label-success">小吉</span></h4></div><div class="panel-body"><p><strong>方位:</strong> 东南 <strong>九星:</strong> 天蓬</p><p><strong>八门:</strong> 生门 <strong>八神:</strong> 值符</p><p><strong>三奇六仪:</strong> 辛</p><p class="gong-explain">值符到宫，小吉，可进取。</p></div></div></div>
+            <div class="col-md-4"><div class="panel panel-danger"><div class="panel-heading"><h4 class="panel-title">5-中 <span class="pull-right label label-danger">小凶</span></h4></div><div class="panel-body"><p><strong>方位:</strong> 中宫</p><p><strong>三奇六仪:</strong> 己</p><p class="gong-explain">中宫小凶，宜静守。</p></div></div></div>
+            <div class="col-md-4"><div class="panel panel-danger"><div class="panel-heading"><h4 class="panel-title">6-乾 <span class="pull-right label label-danger">小凶</span></h4></div><div class="panel-body"><p><strong>方位:</strong> 西北 <strong>九星:</strong> 天英</p><p><strong>八门:</strong> 死门 <strong>八神:</strong> 白虎</p><p><strong>三奇六仪:</strong> 壬</p><p class="gong-explain">死门+白虎，忌大动作，防伤病。</p></div></div></div>
+            <div class="col-md-4"><div class="panel panel-danger"><div class="panel-heading"><h4 class="panel-title">7-兑 <span class="pull-right label label-danger">小凶</span></h4></div><div class="panel-body"><p><strong>方位:</strong> 正西 <strong>九星:</strong> 天辅</p><p><strong>八门:</strong> 景门 <strong>八神:</strong> 玄武</p><p><strong>三奇六仪:</strong> 戊</p><p class="gong-explain">景门+玄武，防欺诈，小凶。</p></div></div></div>
+            <div class="col-md-4"><div class="panel panel-success"><div class="panel-heading"><h4 class="panel-title">8-艮 <span class="pull-right label label-success">大吉</span></h4></div><div class="panel-body"><p><strong>方位:</strong> 东北 <strong>九星:</strong> 天柱</p><p><strong>八门:</strong> 开门 <strong>八神:</strong> 太阴</p><p><strong>三奇六仪:</strong> 丁</p><p class="gong-explain">开门+太阴，大吉，可主动出击。</p></div></div></div>
+            <div class="col-md-4"><div class="panel panel-info"><div class="panel-heading"><h4 class="panel-title">9-离 <span class="pull-right label label-default">平</span></h4></div><div class="panel-body"><p><strong>方位:</strong> 正南 <strong>九星:</strong> 禽芮</p><p><strong>八门:</strong> 伤门 <strong>八神:</strong> 九天</p><p><strong>三奇六仪:</strong> 癸</p><p class="gong-explain">平常之宫，注意外伤即可。</p></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 模态框 -->
+<div class="modal fade" id="customPanModal" tabindex="-1" role="dialog"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4>自定义排盘</h4></div><form action="/custom" method="get"><div class="modal-body">
+  <div class="form-group"><label>排盘类型</label><select class="form-control" name="type"><option>四柱</option><option>三元</option></select></div>
+  <div class="form-group"><label>排盘方法</label><select class="form-control" name="method"><option>时家奇门</option><option>日家奇门</option><option>月家奇门</option><option>年家奇门</option></select></div>
+  <div class="form-group"><label>日期</label><input type="date" class="form-control" name="date" required></div>
+  <div class="form-group"><label>时间</label><input type="time" class="form-control" name="time" required></div>
+  <div class="form-group"><label>地点</label><input type="text" class="form-control" name="location" placeholder="如：北京市"></div>
+  <div class="form-group"><label>目的</label><select class="form-control" name="purpose"><option>综合分析</option><option>事业</option><option>财运</option><option>婚姻</option><option>健康</option><option>学业</option></select></div>
+</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">取消</button><button type="submit" class="btn btn-primary">排盘</button></div></form></div></div></div>
+
+<div class="modal fade" id="helpModal" tabindex="-1" role="dialog"><div class="modal-dialog modal-lg" role="document"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button><h4>奇门遁甲使用说明</h4></div><div class="modal-body">
+  <div class="row"><div class="col-md-6"><h4>奇门遁甲简介</h4><p>奇门遁甲是中国古代预测学的一种，与六壬、太乙合称三式。它通过天地之气的运行规律，推算各种事物的吉凶。</p><h4>基本要素</h4><ul><li>三奇六仪: 戊己庚三奇，辛壬癸丁丙乙六仪</li><li>八门: 休生伤杜景死惊开</li><li>九星: 天蓬、天芮、天冲、天辅、天禽、天英、天柱、天任、天心</li><li>八神: 值符、腾蛇、太阴、六合、白虎、玄武、九地、九天</li><li>值符值使: 九星与八门之首</li></ul></div>
+  <div class="col-md-6"><h4>排盘方法</h4><ul><li>四柱: 年月日时</li><li>三元: 年月日</li><li>时家: 以时辰排盘，适合短期</li><li>日家: 以日子排盘，适合中期</li><li>月家: 以月份排盘，适合长期</li><li>年家: 以年份排盘，适合长期</li></ul><h4>吉凶判断</h4><ul><li>值符、值使落宫吉凶</li><li>九星、八门、八神组合</li><li>休生开景为吉门；伤杜死惊为凶门</li></ul></div></div>
+</div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">关闭</button></div></div></div>
+
+<footer class="footer"><div class="container"><p class="text-muted">奇门遁甲排盘系统 &copy; 2025</p></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
